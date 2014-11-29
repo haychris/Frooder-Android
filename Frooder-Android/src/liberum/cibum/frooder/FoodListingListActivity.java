@@ -66,9 +66,9 @@ public class FoodListingListActivity extends Activity
         }
 
         // TODO: If exposing deep links into your app, handle intents here.
-        Parse.initialize(getApplicationContext(), "peOCyFSug2utyLbNmeoCmqXXL38hp2B1epY0UBOV", "H6gL0iFmKk7jCDT9danWB8zuMm5BpoPvkOvSNwkh");
+        Parse.initialize(FrooderApplication.getInstance(), "peOCyFSug2utyLbNmeoCmqXXL38hp2B1epY0UBOV", "H6gL0iFmKk7jCDT9danWB8zuMm5BpoPvkOvSNwkh");
         // Also in this method, specify a default Activity to handle push notifications
-        PushService.setDefaultPushCallback(getApplicationContext(), FoodListingListActivity.class);
+        PushService.setDefaultPushCallback(FrooderApplication.getInstance(), FoodListingListActivity.class);
         
 
        // ParseAnalytics.trackAppOpened(getIntent());

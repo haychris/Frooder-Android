@@ -1,0 +1,15 @@
+package liberum.cibum.frooder;
+
+public class FrooderApplication extends Application {
+    private static MyApplication me;
+
+    @Override
+    public void onCreate() {        
+        super.onCreate();
+        me = this ;
+
+    }
+    public static MyApplication getInstance() {
+         return me;
+    }
+}
