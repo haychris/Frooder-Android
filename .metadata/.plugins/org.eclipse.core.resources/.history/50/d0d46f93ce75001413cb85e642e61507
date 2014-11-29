@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+       android:id="@+id/card_main"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_marginTop="10dp"
+       android:background="@drawable/combined_card_background"
+       android:descendantFocusability="afterDescendants"
+       android:paddingBottom="15dp"
+       android:paddingLeft="15dp"
+       android:paddingRight="15dp"
+       android:paddingTop="15dp" >
+
+       <ImageView
+           android:id="@+id/food_photo"
+           android:layout_width="75dp"
+           android:layout_height="100dp"
+           android:layout_alignParentLeft="true"
+           android:layout_alignParentTop="true"
+           android:src="@drawable/pep_pizza" />
+
+       <TextView
+           android:id="@+id/food_title"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignLeft="@+id/food_description"
+           android:layout_alignTop="@+id/food_photo"
+           android:text="FOOD"
+           android:textAppearance="?android:attr/textAppearanceMedium" />
+
+       <TextView
+           android:id="@+id/food_distance"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignParentRight="true"
+           android:layout_alignParentTop="true"
+           android:text="532 yards"
+           android:textAppearance="?android:attr/textAppearanceSmall" />
+
+       <TextView
+           android:id="@+id/food_description"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_below="@+id/chance_of_eating"
+           android:layout_marginLeft="18dp"
+           android:layout_toRightOf="@+id/food_photo"
+           android:maxWidth="250dp"
+           android:text="IT&apos;S YUMMY"
+           android:textAppearance="?android:attr/textAppearanceSmall"
+           android:visibility="visible" />
+
+       <TextView
+           android:id="@+id/time_since_posted"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignBaseline="@+id/food_description"
+           android:layout_alignBottom="@+id/food_description"
+           android:layout_alignRight="@+id/food_distance"
+           android:text="5 min"
+           android:textAppearance="?android:attr/textAppearanceSmall" />
+
+       <ProgressBar
+           android:id="@+id/chance_of_eating"
+           style="?android:attr/progressBarStyleHorizontal"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignLeft="@+id/food_title"
+           android:layout_alignRight="@+id/food_distance"
+           android:layout_below="@+id/food_distance"
+           android:max="100"
+           android:progress="100" />
+ 
+   </RelativeLayout>

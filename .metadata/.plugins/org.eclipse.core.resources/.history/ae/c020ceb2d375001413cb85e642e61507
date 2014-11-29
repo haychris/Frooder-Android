@@ -1,0 +1,241 @@
+package liberum.cibum.frooder;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+
+import android.app.Activity;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.app.ListFragment;
+import android.content.Context;
+import android.util.Log;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+
+import liberum.cibum.frooder.dummy.DummyContent;
+import liberum.cibum.frooder.dummy.FoodListingAdapter;
+
+/**
+ * A list fragment representing a list of Food Listings. This fragment
+ * also supports tablet devices by allowing list items to be given an
+ * 'activated' state upon selection. This helps indicate which item is
+ * currently being viewed in a {@link FoodListingDetailFragment}.
+ * <p>
+ * Activities containing this fragment MUST implement the {@link Callbacks}
+ * interface.
+ */
+public class FoodListingListFragment extends ListFragment {
+
+    /**
+     * The serialization (saved instance state) Bundle key representing the
+     * activated item position. Only used on tablets.
+     */
+    private static final String STATE_ACTIVATED_POSITION = "activated_position";
+
+    /**
+     * The fragment's current callback object, which is notified of list item
+     * clicks.
+     */
+    private Callbacks mCallbacks = sDummyCallbacks;
+
+    /**
+     * The current activated item position. Only used on tablets.
+     */
+    private int mActivatedPosition = ListView.INVALID_POSITION;
+    
+    FoodListingAdapter mListAdapter;
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callbacks {
+        /**
+         * Callback for when an item has been selected.
+         */
+        public void onItemSelected(String id);
+    }
+
+    /**
+     * A dummy implementation of the {@link Callbacks} interface that does
+     * nothing. Used only when this fragment is not attached to an activity.
+     */
+    private static Callbacks sDummyCallbacks = new Callbacks() {
+        @Override
+        public void onItemSelected(String id) {
+        }
+    };
+    ArrayList<ParseObject> foodItemList;
+    /**
+     * Mandatory empty constructor for the fragment manager to instantiate the
+     * fragment (e.g. upon screen orientation changes).
+     */
+    public FoodListingListFragment() {
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Parse.initialize(getActivity(), "peOCyFSug2utyLbNmeoCmqXXL38hp2B1epY0UBOV", "H6gL0iFmKk7jCDT9danWB8zuMm5BpoPvkOvSNwkh");
+
+//     // Acquire a reference to the system Location Manager
+//        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+//
+//        // Define a listener that responds to location updates
+//        LocationListener locationListener = new LocationListener() {
+//            public void onLocationChanged(Location location) {
+//              // Called when a new location is found by the network location provider.
+//              //makeUseOfNewLocation(location);
+//            }
+//
+//            public void onStatusChanged(String provider, int status, Bundle extras) {}
+//
+//            public void onProviderEnabled(String provider) {}
+//
+//            public void onProviderDisabled(String provider) {}
+//          };
+//
+//        // Register the listener with the Location Manager to receive location updates
+//        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+//        
+//        
+//        
+        
+        // TODO: replace with a real list adapter.
+//        setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(
+//                getActivity(),
+//                android.R.layout.simple_list_item_activated_1,
+//                android.R.id.text1,
+//                DummyContent.ITEMS));
+        foodItemList = new ArrayList<ParseObject>();
+        
+//        ParseQuery<ParseObject> query = ParseQuery.getQuery("FoodListing");
+//        query.whereNotEqualTo("foodType", "poop");
+//        query.getFirstInBackground(new GetCallback<ParseObject>() {
+//        	  public void done(ParseObject object, ParseException e) {
+//        	    if (object == null) {
+//        	      Log.d("score", "The getFirst request failed.");
+//        	    } else {
+//        	      foodItemList.add(object);
+//        	      mListAdapter.notifyDataSetChanged();
+//        	      Log.d("score", "Retrieved the object.");
+//        	    }   
+//        	  }
+//        	});
+        ParseQuery<ParseObject> queryPrinceton = ParseQuery.getQuery("FoodListing");
+        query.whereExists("relevantChannels");
+        query.findInBackground(new FindCallback<ParseObject>() {
+            public void done(List<ParseObject> foodList, ParseException e) {
+                if (e == null) {
+                    Log.d("score", "Retrieved " + foodList.size() + " scores");
+                    foodItemList.addAll(foodList);
+          	      	mListAdapter.notifyDataSetChanged();
+                } else {
+                    Log.d("score", "Error: " + e.getMessage());
+                }
+            }
+        });
+        
+        ParseObject test = new ParseObject("test");
+        test.put("foodType", "Pizza");
+        test.put("relativeQuantity", 3);
+        test.put("whereText", "Forbes A132");
+        foodItemList.add(test);
+        
+        ParseObject test2 = new ParseObject("test2");
+        test2.put("foodType", "Chicken");
+        test2.put("relativeQuantity", 7);
+        test2.put("whereText", "Friend Basement");
+        foodItemList.add(test2);
+        
+        mListAdapter = new FoodListingAdapter(getActivity(), R.layout.food_card, foodItemList);
+        setListAdapter(mListAdapter);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Restore the previously serialized activated item position.
+        if (savedInstanceState != null
+                && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
+            setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
+        }
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        // Activities containing this fragment must implement its callbacks.
+        if (!(activity instanceof Callbacks)) {
+            throw new IllegalStateException("Activity must implement fragment's callbacks.");
+        }
+
+        mCallbacks = (Callbacks) activity;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        // Reset the active callbacks interface to the dummy implementation.
+        mCallbacks = sDummyCallbacks;
+    }
+
+    @Override
+    public void onListItemClick(ListView listView, View view, int position, long id) {
+        super.onListItemClick(listView, view, position, id);
+
+        // Notify the active callbacks interface (the activity, if the
+        // fragment is attached to one) that an item has been selected.
+        
+        //TODO: REPLACE
+        //mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
+        mCallbacks.onItemSelected(foodItemList.get(position).getString("foodType"));
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mActivatedPosition != ListView.INVALID_POSITION) {
+            // Serialize and persist the activated item position.
+            outState.putInt(STATE_ACTIVATED_POSITION, mActivatedPosition);
+        }
+    }
+
+    /**
+     * Turns on activate-on-click mode. When this mode is on, list items will be
+     * given the 'activated' state when touched.
+     */
+    public void setActivateOnItemClick(boolean activateOnItemClick) {
+        // When setting CHOICE_MODE_SINGLE, ListView will automatically
+        // give items the 'activated' state when touched.
+        getListView().setChoiceMode(activateOnItemClick
+                ? ListView.CHOICE_MODE_SINGLE
+                : ListView.CHOICE_MODE_NONE);
+    }
+
+    private void setActivatedPosition(int position) {
+        if (position == ListView.INVALID_POSITION) {
+            getListView().setItemChecked(mActivatedPosition, false);
+        } else {
+            getListView().setItemChecked(position, true);
+        }
+
+        mActivatedPosition = position;
+    }
+}

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
+		<item value="330" key="DIALOG_WIDTH"/>
+		<item value="77" key="DIALOG_Y_ORIGIN"/>
+		<item value="456" key="DIALOG_HEIGHT"/>
+		<item value="572" key="DIALOG_X_ORIGIN"/>
+		<item value="1|Ubuntu|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item value="true" key="wrap"/>
+		<item value="false" key="isRegEx"/>
+		<item value="false" key="casesensitive"/>
+		<item value="false" key="incremental"/>
+		<item value="false" key="wholeword"/>
+		<item value="id/chance_of_eating" key="selection"/>
+		<list key="findhistory">
+			<item value="id/progressBar1"/>
+			<item value="id/textView1"/>
+			<item value="id/textView2"/>
+			<item value="id/card_title"/>
+			<item value="id/card_description"/>
+			<item value="id/imageView1"/>
+		</list>
+		<list key="replacehistory">
+			<item value="id/chance_of_eating"/>
+			<item value="id/time_since_posted"/>
+			<item value="id/food_distance"/>
+			<item value="id/food_title"/>
+			<item value="id/food_description"/>
+			<item value="id/food_photo"/>
+		</list>
+	</section>
+</section>

@@ -1,0 +1,38 @@
+import liberum.cibum.frooder.FoodListingListActivity;
+import android.app.Application;
+import android.util.Log;
+
+import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseInstallation;
+import com.parse.ParsePush;
+import com.parse.PushService;
+import com.parse.SaveCallback;
+
+public class FrooderApp extends Application {
+
+@Override
+public void onCreate() {
+    super.onCreate();
+
+    Parse.initialize(getApplicationContext(), "peOCyFSug2utyLbNmeoCmqXXL38hp2B1epY0UBOV", "H6gL0iFmKk7jCDT9danWB8zuMm5BpoPvkOvSNwkh");
+    // Also in this method, specify a default Activity to handle push notifications
+    PushService.setDefaultPushCallback(getApplicationContext(), FoodListingListActivity.class);
+    
+
+   // ParseAnalytics.trackAppOpened(getIntent());
+
+    // If you would like all objects to be private by default, remove this line.
+    ParsePush.subscribeInBackground("", new SaveCallback() {
+    	  @Override
+    	  public void done(ParseException e) {
+    	    if (e == null) {
+    	      Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
+    	    } else {
+    	      Log.e("com.parse.push", "failed to subscribe for push", e);
+    	    }
+    	  }
+    	}); 
+    ParseInstallation.getCurrentInstallation().saveInBackground();}
+
+}

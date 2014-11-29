@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Frooder</string>
+    <string name="title_foodlisting_detail">Food Listing Detail</string>
+    <string name="title_activity_add_food">AddFoodActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="add_food">Add Food</string>
+
+</resources>

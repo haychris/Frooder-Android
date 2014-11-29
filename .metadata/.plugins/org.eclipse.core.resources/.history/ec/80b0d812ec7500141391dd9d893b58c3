@@ -1,0 +1,150 @@
+package liberum.cibum.frooder;
+
+import java.util.ArrayList;
+
+import com.parse.ParseGeoPoint;
+import com.parse.ParseObject;
+
+import android.app.Activity;
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.SeekBar;
+
+public class AddFoodActivity extends Activity {
+	Location currentLocation;
+	private static final int TWO_MINUTES = 1000 * 60 * 2;
+
+ 
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_add_food);
+	     // Acquire a reference to the system Location Manager
+      LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+      // Define a listener that responds to location updates
+      LocationListener locationListener = new LocationListener() {
+          public void onLocationChanged(Location location) {
+            // Called when a new location is found by the network location provider.
+            //makeUseOfNewLocation(location);
+        	  Log.e("location", "new food location update: " + location.getLatitude() + " " + location.getLongitude());
+        	  if (isBetterLocation(location, currentLocation))
+        		  currentLocation = location;
+          }
+
+          public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+          public void onProviderEnabled(String provider) {}
+
+          public void onProviderDisabled(String provider) {}
+        };
+
+      // Register the listener with the Location Manager to receive location updates
+      locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.settings, menu);
+		return true;
+	}
+  
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	public void saveFood(View view) {
+		
+		String food = ((EditText) findViewById(R.id.editText1)).getText().toString();
+		((EditText) findViewById(R.id.editText1)).setText("");
+		String where = ((EditText) findViewById(R.id.editText2)).getText().toString();
+		((EditText) findViewById(R.id.editText2)).setText("");
+		SeekBar quantity = ((SeekBar) findViewById(R.id.seekBar1));
+		double max = quantity.getMax();
+		double current = quantity.getProgress();
+		int relativeQuantity = (int) (10.0 * current / max);
+		
+		ParseObject foodListing = new ParseObject("FoodListing");
+		foodListing.put("foodType", food);
+		foodListing.put("whereText", where);
+		foodListing.put("relativeQuantity", relativeQuantity);
+		ArrayList<String> channels = new ArrayList<String>();
+		channels.add("Princeton");
+		foodListing.put("relevantChannels", channels);
+		if (currentLocation != null) {
+			ParseGeoPoint parseLocation = new ParseGeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude());
+			foodListing.put("foodLocation", parseLocation);
+		}
+		foodListing.saveInBackground();
+	}
+	
+	/** Determines whether one Location reading is better than the current Location fix
+	  * @param location  The new Location that you want to evaluate
+	  * @param currentBestLocation  The current Location fix, to which you want to compare the new one
+	  */
+	protected boolean isBetterLocation(Location location, Location currentBestLocation) {
+	    if (currentBestLocation == null) {
+	        // A new location is always better than no location
+	        return true;
+	    }
+
+	    // Check whether the new location fix is newer or older
+	    long timeDelta = location.getTime() - currentBestLocation.getTime();
+	    boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
+	    boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
+	    boolean isNewer = timeDelta > 0;
+
+	    // If it's been more than two minutes since the current location, use the new location
+	    // because the user has likely moved
+	    if (isSignificantlyNewer) {
+	        return true;
+	    // If the new location is more than two minutes older, it must be worse
+	    } else if (isSignificantlyOlder) {
+	        return false;
+	    }
+
+	    // Check whether the new location fix is more or less accurate
+	    int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
+	    boolean isLessAccurate = accuracyDelta > 0;
+	    boolean isMoreAccurate = accuracyDelta < 0;
+	    boolean isSignificantlyLessAccurate = accuracyDelta > 200;
+
+	    // Check if the old and new location are from the same provider
+	    boolean isFromSameProvider = isSameProvider(location.getProvider(),
+	            currentBestLocation.getProvider());
+
+	    // Determine location quality using a combination of timeliness and accuracy
+	    if (isMoreAccurate) {
+	        return true;
+	    } else if (isNewer && !isLessAccurate) {
+	        return true;
+	    } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
+	        return true;
+	    }
+	    return false;
+	}
+
+	/** Checks whether two providers are the same */
+	private boolean isSameProvider(String provider1, String provider2) {
+	    if (provider1 == null) {
+	      return provider2 == null;
+	    }
+	    return provider1.equals(provider2);
+	}
+}

@@ -1,0 +1,20 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:name="liberum.cibum.frooder.FoodListingFrame"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#730B19" >
+
+<fragment 
+    android:id="@+id/foodlisting_list"
+    android:name="liberum.cibum.frooder.FoodListingListFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    tools:context="liberum.cibum.frooder.FoodListingListActivity"
+    tools:layout="@android:layout/list_content" />    
+    
+
+
+</FrameLayout>

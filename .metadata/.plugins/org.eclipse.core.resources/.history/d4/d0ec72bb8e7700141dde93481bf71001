@@ -1,0 +1,16 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/foodlisting_detail_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="liberum.cibum.frooder.FoodListingDetailActivity"
+    tools:ignore="MergeRootFrame" > 
+    
+    <com.google.android.gms.maps.MapView
+3	    xmlns:android="http://schemas.android.com/apk/res/android"
+4	    android:layout_width="match_parent"
+5	    android:layout_height="match_parent"
+6	    android:id="@+id/mapView" />
+    
+    </FrameLayout>
+
