@@ -3,6 +3,8 @@ package liberum.cibum.frooder.dummy;
 import java.util.Date; 
 import java.util.List;
 
+import liberum.cibum.frooder.FrooderApplication;
+
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 
@@ -29,6 +31,7 @@ public class FoodListingAdapter extends ArrayAdapter<ParseObject> {
 	
 	private Context mContext;
 	private ParseGeoPoint parseUserLocation;
+	
 	public FoodListingAdapter(Context context, int resource, List<ParseObject> objects) {
 		super(context, resource, objects);
 		mContext = context;
@@ -58,7 +61,9 @@ public class FoodListingAdapter extends ArrayAdapter<ParseObject> {
 			convertView = inflater.inflate(liberum.cibum.frooder.R.layout.food_card, parent, false);
 		}
 		ParseObject foodItem = this.getItem(position);
-		
+		ParseGeoPoint masterPoint = null;
+		if ((masterPoint = FrooderApplication.getInstance().getParseLocation()) != null)
+			parseUserLocation = masterPoint;
 		
 		ImageView foodPhoto = (ImageView)((ViewGroup) convertView).getChildAt(0);
 		

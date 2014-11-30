@@ -1,0 +1,36 @@
+package liberum.cibum.frooder;
+
+import com.google.android.gms.maps.GoogleMap;
+
+import android.app.Application;
+import android.location.Location;
+
+public class FrooderApplication extends Application {
+    private static FrooderApplication me;
+    private GoogleMap theMap;
+    private Location bestLocation;
+    
+
+    @Override
+    public void onCreate() {        
+        super.onCreate();
+        me = this ;
+
+    }
+    public static FrooderApplication getInstance() {
+         return me;
+    }
+    
+	public GoogleMap getMap() {
+		return theMap;
+	}
+	public void setMap(GoogleMap theMap) {
+		this.theMap = theMap;
+	}
+	public Location getLocation() {
+		return bestLocation;
+	}
+	public void setLocation(Location bestLocation) {
+		this.bestLocation = bestLocation;
+	}
+}

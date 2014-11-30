@@ -9,13 +9,16 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseException;
 
 
+import android.location.Location;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
@@ -38,6 +41,7 @@ public class FoodListingDetailFragment extends Fragment {
      * represents.
      */
     public static final String ARG_ITEM_ID = "item_id";
+    private static final int MAX_ZOOM_LEVEL = 20;
 
     /**
      * The dummy content this fragment is presenting.
@@ -45,6 +49,7 @@ public class FoodListingDetailFragment extends Fragment {
     private ParseObject mItem;
 	MapView mapView;
 	GoogleMap map; 
+	boolean setFoodMarker = false;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -65,9 +70,35 @@ public class FoodListingDetailFragment extends Fragment {
              query.getInBackground(getArguments().getString(ARG_ITEM_ID), new GetCallback<ParseObject>() {
                public void done(ParseObject object, ParseException e) {
                  if (e == null) {
-                   // object will be your game score
                 	 mItem = object;
                 	 ((TextView) getView().findViewById(R.id.foodlisting_detail)).setText(mItem.getString("foodType"));
+                	 ParseGeoPoint foodLocation = mItem.getParseGeoPoint("foodLocation");
+                	 if (map != null && !setFoodMarker) {
+                		 setFoodMarker = true;
+                		 map.addMarker(new MarkerOptions()
+                		    .position(new LatLng(foodLocation.getLatitude(), foodLocation.getLongitude()))
+                		    .title(mItem.getString("foodType")));
+                		 
+                		 
+                		Location userLocation = FrooderApplication.getInstance().getLocation();
+            	        ParseGeoPoint parseUserLocation = FrooderApplication.getInstance().getParseLocation();
+            	        LatLng userLatLng;
+            	        if (userLocation == null) {
+            	        	userLatLng = new LatLng(40, -74);
+            	        	Log.e("updating map", "location null, using hardcoded default");
+            	        } else {
+            	        	userLatLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
+            	        }
+            	
+      
+        	   		 	LatLng medianLatLng = new LatLng((foodLocation.getLatitude() + userLatLng.latitude) / 2, 
+        	   		 									 (foodLocation.getLongitude() + userLatLng.longitude) / 2);
+        		        int zoomLevel = calculateZoomLevel(mapView.getWidth(), 
+        		        				(int) (foodLocation.distanceInKilometersTo(parseUserLocation) * 1000.0));
+        		        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(medianLatLng, zoomLevel);
+        		        map.animateCamera(cameraUpdate);
+                	        
+                	 }
                  } else {
                    // something went wrong
                  }
@@ -94,14 +125,55 @@ public class FoodListingDetailFragment extends Fragment {
          
         MapsInitializer.initialize(this.getActivity());
         // Updates the location and zoom of the MapView
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(40.4315248, -74.660736), 15);
-        map.animateCamera(cameraUpdate); 
-        // Show the dummy content as text in a TextView.
-//        if (mItem != null) {
-//            ((TextView) rootView.findViewById(R.id.foodlisting_detail)).setText(mItem.content);
-//        }
+        Location userLocation = FrooderApplication.getInstance().getLocation();
+        ParseGeoPoint parseUserLocation = FrooderApplication.getInstance().getParseLocation();
+        LatLng userLatLng;
+        if (userLocation == null) {
+        	userLatLng = new LatLng(40, -74);
+        	Log.e("updating map", "location null, using hardcoded default");
+        } else {
+        	userLatLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
+        }
+        if (mItem != null && !setFoodMarker) {
+        	setFoodMarker = true;
+   		 	ParseGeoPoint foodLocation = mItem.getParseGeoPoint("foodLocation");
+   		 	map.addMarker(new MarkerOptions()
+   		 		.position(new LatLng(foodLocation.getLatitude(), foodLocation.getLongitude()))
+   		 		.title(mItem.getString("foodType")));
+   	 	
+   		 	LatLng medianLatLng = new LatLng((foodLocation.getLatitude() + userLatLng.latitude) / 2, 
+   		 									 (foodLocation.getLongitude() + userLatLng.longitude) / 2);
+	        int zoomLevel = calculateZoomLevel(mapView.getWidth(), 
+	        				(int) (foodLocation.distanceInKilometersTo(parseUserLocation) * 1000.0));
+	        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(medianLatLng, zoomLevel);
+	        map.animateCamera(cameraUpdate);
+        } else {
+        	CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(userLatLng, 15);
+        	map.animateCamera(cameraUpdate);
+        }
+ 
+
+        
 
         return rootView;
+    }
+    private int calculateZoomLevel(int screenWidth, int distanceShown) {
+    	//TODO: properly fix this
+    	if (screenWidth == 0) return 15;
+        double equatorLength = 40075004; // in meters
+        double widthInPixels = screenWidth;
+        double metersPerPixel = equatorLength / 256;
+        int zoomLevel = 1;
+        while ((metersPerPixel * widthInPixels) > distanceShown) {
+            metersPerPixel /= 2;
+            ++zoomLevel;
+        }
+        Log.e("map", "distance = " + distanceShown);
+        Log.e("map", "screen width = " + screenWidth); 
+        Log.e("map", "zoom level = "+zoomLevel);
+        if (zoomLevel > MAX_ZOOM_LEVEL)
+        	return MAX_ZOOM_LEVEL;
+        return zoomLevel;
     }
     
 	@Override
