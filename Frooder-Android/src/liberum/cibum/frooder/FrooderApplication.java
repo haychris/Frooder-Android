@@ -1,7 +1,13 @@
 package liberum.cibum.frooder;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.parse.Parse;
+import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseInstallation;
+import com.parse.ParsePush;
+import com.parse.PushService;
+import com.parse.SaveCallback;
 
 import android.app.Application;
 import android.content.Context;
@@ -23,6 +29,29 @@ public class FrooderApplication extends Application {
     public void onCreate() {        
         super.onCreate();
         me = this ;
+        
+        Parse.initialize(FrooderApplication.getInstance(), "peOCyFSug2utyLbNmeoCmqXXL38hp2B1epY0UBOV", "H6gL0iFmKk7jCDT9danWB8zuMm5BpoPvkOvSNwkh");
+        // Also in this method, specify a default Activity to handle push notifications
+        PushService.setDefaultPushCallback(FrooderApplication.getInstance(), FoodListingListActivity.class);
+        
+
+       // ParseAnalytics.trackAppOpened(getIntent());
+
+        // If you would like all objects to be private by default, remove this line.
+        ParsePush.subscribeInBackground("", new SaveCallback() {
+        	  @Override
+        	  public void done(ParseException e) {
+        	    if (e == null) {
+        	      Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
+        	    } else {
+        	      Log.e("com.parse.push", "failed to subscribe for push", e);
+        	    }
+        	  } 
+        	}); 
+        ParseInstallation.getCurrentInstallation().saveInBackground();
+
+        
+        
         
      // Acquire a reference to the system Location Manager
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);

@@ -101,7 +101,7 @@ public class FoodListingListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Parse.initialize(getActivity(), "peOCyFSug2utyLbNmeoCmqXXL38hp2B1epY0UBOV", "H6gL0iFmKk7jCDT9danWB8zuMm5BpoPvkOvSNwkh");
+        //Parse.initialize(getActivity(), "peOCyFSug2utyLbNmeoCmqXXL38hp2B1epY0UBOV", "H6gL0iFmKk7jCDT9danWB8zuMm5BpoPvkOvSNwkh");
 
      // Acquire a reference to the system Location Manager
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);

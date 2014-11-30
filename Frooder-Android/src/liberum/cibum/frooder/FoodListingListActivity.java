@@ -66,25 +66,25 @@ public class FoodListingListActivity extends Activity
         }
 
         // TODO: If exposing deep links into your app, handle intents here.
-        Parse.initialize(FrooderApplication.getInstance(), "peOCyFSug2utyLbNmeoCmqXXL38hp2B1epY0UBOV", "H6gL0iFmKk7jCDT9danWB8zuMm5BpoPvkOvSNwkh");
-        // Also in this method, specify a default Activity to handle push notifications
-        PushService.setDefaultPushCallback(FrooderApplication.getInstance(), FoodListingListActivity.class);
-        
-
-       // ParseAnalytics.trackAppOpened(getIntent());
-
-        // If you would like all objects to be private by default, remove this line.
-        ParsePush.subscribeInBackground("", new SaveCallback() {
-        	  @Override
-        	  public void done(ParseException e) {
-        	    if (e == null) {
-        	      Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
-        	    } else {
-        	      Log.e("com.parse.push", "failed to subscribe for push", e);
-        	    }
-        	  } 
-        	}); 
-        ParseInstallation.getCurrentInstallation().saveInBackground();
+//        Parse.initialize(FrooderApplication.getInstance(), "peOCyFSug2utyLbNmeoCmqXXL38hp2B1epY0UBOV", "H6gL0iFmKk7jCDT9danWB8zuMm5BpoPvkOvSNwkh");
+//        // Also in this method, specify a default Activity to handle push notifications
+//        PushService.setDefaultPushCallback(FrooderApplication.getInstance(), FoodListingListActivity.class);
+//        
+//
+//       // ParseAnalytics.trackAppOpened(getIntent());
+//
+//        // If you would like all objects to be private by default, remove this line.
+//        ParsePush.subscribeInBackground("", new SaveCallback() {
+//        	  @Override
+//        	  public void done(ParseException e) {
+//        	    if (e == null) {
+//        	      Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
+//        	    } else {
+//        	      Log.e("com.parse.push", "failed to subscribe for push", e);
+//        	    }
+//        	  } 
+//        	}); 
+//        ParseInstallation.getCurrentInstallation().saveInBackground();
        
     }
 

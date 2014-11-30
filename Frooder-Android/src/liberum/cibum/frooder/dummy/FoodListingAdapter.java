@@ -29,7 +29,7 @@ public class FoodListingAdapter extends ArrayAdapter<ParseObject> {
 	private static int FINAL_BLUE = 60;
 	private static double MOVEMENT_SPEED = 1.4; // in m/s
 	
-	private Context mContext;
+	private Context mContext; 
 	private ParseGeoPoint parseUserLocation;
 	
 	public FoodListingAdapter(Context context, int resource, List<ParseObject> objects) {
