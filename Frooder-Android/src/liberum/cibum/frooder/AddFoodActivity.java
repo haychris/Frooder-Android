@@ -2,6 +2,14 @@ package liberum.cibum.frooder;
 
 import java.util.ArrayList;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 
@@ -20,12 +28,35 @@ import android.widget.SeekBar;
 
 public class AddFoodActivity extends Activity {
 
-          
+	MapView mapView;
+	GoogleMap map;      
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_add_food);
-	    }
+		// Gets the MapView from the XML layout and creates it
+        mapView = (MapView) findViewById(R.id.mapview_add);
+        mapView.onCreate(savedInstanceState);
+        // Gets to GoogleMap from the MapView and does initialization stuff
+        map = mapView.getMap();
+        map.getUiSettings().setMyLocationButtonEnabled(false);   
+        map.setMyLocationEnabled(false);
+         
+        MapsInitializer.initialize(this);
+        
+        Location userLocation = FrooderApplication.getInstance().getLocation();
+        LatLng userLatLng;
+        if (userLocation != null)
+        	userLatLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());    
+        else
+        	userLatLng = new LatLng(40, -74); //TODO: change to best guess
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(userLatLng, 17);
+        map.animateCamera(cameraUpdate);
+        
+       // Marker foodMarker = map.addMarker(new MarkerOptions().position(userLatLng).draggable(true));
+  
+
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -63,12 +94,31 @@ public class AddFoodActivity extends Activity {
 		ArrayList<String> channels = new ArrayList<String>();
 		channels.add("Princeton");
 		foodListing.put("relevantChannels", channels);
-		Location currentLocation = FrooderApplication.getInstance().getLocation();
-		if (currentLocation != null) {
-			ParseGeoPoint parseLocation = new ParseGeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude());
-			foodListing.put("foodLocation", parseLocation);
-		}
+//		Location currentLocation = FrooderApplication.getInstance().getLocation();
+//		if (currentLocation != null) {
+//			ParseGeoPoint parseLocation = new ParseGeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude());
+//			foodListing.put("foodLocation", parseLocation);
+//		}
+		LatLng mappedFoodLocation = map.getCameraPosition().target;
+		ParseGeoPoint parseFoodLocation = new ParseGeoPoint(mappedFoodLocation.latitude, mappedFoodLocation.longitude);
+		foodListing.put("foodLocation", parseFoodLocation);
 		foodListing.saveInBackground();
 	}
+	
+	@Override
+	public void onResume() {
+		mapView.onResume();
+		super.onResume();
+	}
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		mapView.onDestroy();
+	}
+	@Override
+	public void onLowMemory() {
+		super.onLowMemory();
+		mapView.onLowMemory();
+	} 
 }
 	

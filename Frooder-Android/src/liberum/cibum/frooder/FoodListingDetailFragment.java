@@ -191,7 +191,7 @@ public class FoodListingDetailFragment extends Fragment {
         	return MAX_ZOOM_LEVEL;
         return zoomLevel;
     }
-    
+     
 	@Override
 	public void onResume() {
 		mapView.onResume();
