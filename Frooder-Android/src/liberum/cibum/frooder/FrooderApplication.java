@@ -23,7 +23,7 @@ public class FrooderApplication extends Application {
     private GoogleMap theMap;
     private Location bestLocation;
     private ParseGeoPoint parseUserLocation;
-    
+     
 
     @Override
     public void onCreate() {        

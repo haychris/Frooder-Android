@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import liberum.cibum.frooder.dummy.DummyContent;
+import liberum.cibum.frooder.dummy.FoodListingAdapter;
   
 /**
  * A fragment representing a single Food Listing detail screen.
@@ -50,6 +51,7 @@ public class FoodListingDetailFragment extends Fragment {
 	MapView mapView;
 	GoogleMap map; 
 	boolean setFoodMarker = false;
+	View cardView;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -71,7 +73,15 @@ public class FoodListingDetailFragment extends Fragment {
                public void done(ParseObject object, ParseException e) {
                  if (e == null) {
                 	 mItem = object;
-                	 ((TextView) getView().findViewById(R.id.foodlisting_detail)).setText(mItem.getString("foodType"));
+                	 //((TextView) getView().findViewById(R.id.foodlisting_detail)).setText(mItem.getString("foodType"));
+                	 //View card = getView().findViewById(R.id.card_main_detail);
+         	         ParseGeoPoint parseUserLocation = FrooderApplication.getInstance().getParseLocation();
+         	         if (cardView != null) {
+                		 Log.e("card detail", "filling card from onCreate()");
+                		 FoodListingAdapter.fillCard(cardView, object, parseUserLocation);
+                	 } else {
+                		 Log.e("card detail", "did not fill card from onCreate()");
+                	 }
                 	 ParseGeoPoint foodLocation = mItem.getParseGeoPoint("foodLocation");
                 	 if (map != null && !setFoodMarker) {
                 		 setFoodMarker = true;
@@ -81,7 +91,6 @@ public class FoodListingDetailFragment extends Fragment {
                 		 
                 		 
                 		Location userLocation = FrooderApplication.getInstance().getLocation();
-            	        ParseGeoPoint parseUserLocation = FrooderApplication.getInstance().getParseLocation();
             	        LatLng userLatLng;
             	        if (userLocation == null) {
             	        	userLatLng = new LatLng(40, -74);
@@ -127,6 +136,13 @@ public class FoodListingDetailFragment extends Fragment {
         // Updates the location and zoom of the MapView
         Location userLocation = FrooderApplication.getInstance().getLocation();
         ParseGeoPoint parseUserLocation = FrooderApplication.getInstance().getParseLocation();
+	    cardView = rootView.findViewById(R.id.card_main_detail);
+		if (mItem != null) {
+			Log.e("food detail", "Filling card from getView()");
+			FoodListingAdapter.fillCard(cardView, mItem, parseUserLocation);
+		} else {
+			Log.e("food detail", "did not fill card in getView()");
+		}
         LatLng userLatLng;
         if (userLocation == null) {
         	userLatLng = new LatLng(40, -74);

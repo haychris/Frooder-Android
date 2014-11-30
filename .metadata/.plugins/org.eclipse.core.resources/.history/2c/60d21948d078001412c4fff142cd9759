@@ -1,0 +1,151 @@
+package liberum.cibum.frooder.dummy;
+
+import java.util.Date; 
+import java.util.List;
+
+import liberum.cibum.frooder.FrooderApplication;
+
+import com.parse.ParseGeoPoint;
+import com.parse.ParseObject;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.location.Location;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
+import android.widget.TextView;
+
+public class FoodListingAdapter extends ArrayAdapter<ParseObject> {
+	//final color cards transform to
+//	private static int FINAL_RED = 115;
+//	private static int  FINAL_GREEN = 80;
+//	private static int FINAL_BLUE = 60;
+	private static int FINAL_RED = 51;
+	private static int  FINAL_GREEN = 36;
+	private static int FINAL_BLUE = 26;
+	
+	private static double MOVEMENT_SPEED = 1.4; // in m/s
+	
+	private Context mContext; 
+	private ParseGeoPoint parseUserLocation;
+	
+	public FoodListingAdapter(Context context, int resource, List<ParseObject> objects) {
+		super(context, resource, objects);
+		mContext = context;
+	}
+
+	public FoodListingAdapter(Context context, int resource,
+			int textViewResourceId, List<ParseObject> objects) {
+		super(context, resource, textViewResourceId, objects);
+		mContext = context;
+	}
+	public void setUserLocation(Location userLocation) {
+		if (userLocation == null)
+			return;
+		if (parseUserLocation == null) {
+			parseUserLocation = new ParseGeoPoint(userLocation.getLatitude(), 
+												  userLocation.getLongitude());
+		} else {
+			parseUserLocation.setLatitude(userLocation.getLatitude());
+			parseUserLocation.setLongitude(userLocation.getLongitude());
+		}
+		
+	}
+	public static void fillCard(View card, ParseObject foodListing, ParseGeoPoint userLocationParse) {
+		ImageView foodPhoto = (ImageView)((ViewGroup) card).getChildAt(0);
+		
+		TextView foodTitle = (TextView) ((ViewGroup) card).getChildAt(1);
+		foodTitle.setText(foodListing.getString("foodType"));
+		
+		TextView foodDistance = (TextView) ((ViewGroup) card).getChildAt(2);
+		ParseGeoPoint foodLocation = foodListing.getParseGeoPoint("foodLocation");
+		double foodDist = -1;
+		if (foodLocation != null && userLocationParse != null) {
+			foodDist = foodLocation.distanceInKilometersTo(userLocationParse);
+			if (foodDist >= 1) 
+				foodDistance.setText(String.format("%.1f km", foodDist));
+			else {
+				int foodDistMeters = (int) Math.round(foodDist * 1000);
+				foodDistance.setText(foodDistMeters + ((foodDistMeters == 1) ? " meter":" meters"));
+			} 
+		}
+		
+		TextView foodDescription = (TextView) ((ViewGroup) card).getChildAt(3);
+		foodDescription.setText("There's " + foodListing.getInt("relativeQuantity") + " at " + foodListing.getString("whereText") + "!");
+		
+		TextView foodTimePosted = (TextView) ((ViewGroup) card).getChildAt(4);
+		Date updateDate = foodListing.getCreatedAt();
+		if (updateDate == null)
+			updateDate = new Date(0);
+		Long timeSinceUpdate = (System.currentTimeMillis() - updateDate.getTime()) / 1000;
+		if (timeSinceUpdate < 60) { 
+			foodTimePosted.setText(timeSinceUpdate + "s");
+		} else if ((timeSinceUpdate /= 60) < 60){
+			foodTimePosted.setText(timeSinceUpdate + "m");
+		} else if ((timeSinceUpdate /= 60) < 24) {
+			foodTimePosted.setText(timeSinceUpdate + "h");
+		} else if ((timeSinceUpdate /= 24) < 365) {
+			foodTimePosted.setText(timeSinceUpdate + "d");
+		} else {
+			foodTimePosted.setText(timeSinceUpdate/365 + "y");
+		}
+		 
+		ProgressBar chanceOfEating = (ProgressBar) ((ViewGroup) card).getChildAt(5);
+		chanceOfEating.setProgress((int) (((double) foodListing.getInt("relativeQuantity") / 10.0) * chanceOfEating.getMax()));
+
+		//for determining shading of card based on percent chance
+		Long elapsedTime = ((System.currentTimeMillis() - updateDate.getTime()) / 1000);
+		 
+		// percent chance that it's gone
+		double percentChance = 9 * Math.log(((foodDist != -1) ? foodDist / MOVEMENT_SPEED + elapsedTime : elapsedTime));
+		if (percentChance > 100) percentChance = 100;
+		int colorRed = (int) (255 - percentChance * (255 - FINAL_RED) / 100.0);
+		if (colorRed < 0) colorRed = 0; 
+		int colorGreen = (int) (255 - percentChance * (255 - FINAL_GREEN) / 100.0);
+		if (colorGreen < 0) colorGreen = 0;
+		int colorBlue = (int) (255 - percentChance * (255 - FINAL_BLUE) / 100.0);
+		if (colorBlue < 0) colorBlue = 0;
+		
+		double backLuminance = 0.299 * colorRed + 0.587 * colorGreen + 0.114 * colorBlue;
+		int textColor = Color.rgb(0, 0, 0);
+		if (backLuminance < 70) {
+			Log.v("color", "backLuminance = " + backLuminance + " for " + foodListing.getString("foodType"));
+			int newShade = (int) (backLuminance * 5);
+			if (newShade > 255) newShade = 200;
+			if (newShade < 60) newShade = 200;
+			textColor = Color.rgb(newShade, newShade, newShade);
+			
+		} 
+		foodTitle.setTextColor(textColor);
+		foodDistance.setTextColor(textColor);
+		foodDescription.setTextColor(textColor);
+		foodTimePosted.setTextColor(textColor);
+		
+		card.setBackgroundColor(Color.rgb(colorRed, colorGreen, colorBlue));
+	}
+	
+	public View getView(int position, View convertView, ViewGroup parent) {
+		if (convertView == null) { 
+			LayoutInflater inflater = LayoutInflater.from(mContext);
+			convertView = inflater.inflate(liberum.cibum.frooder.R.layout.food_card, parent, false);
+		}
+		ParseObject foodItem = this.getItem(position);
+		ParseGeoPoint masterPoint = null;
+		if ((masterPoint = FrooderApplication.getInstance().getParseLocation()) != null)
+			parseUserLocation = masterPoint;
+		
+		//fills in view
+		fillCard(convertView, foodItem, parseUserLocation);
+		
+		return convertView;
+	}
+
+} 

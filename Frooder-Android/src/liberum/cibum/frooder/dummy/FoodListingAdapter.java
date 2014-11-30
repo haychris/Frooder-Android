@@ -11,6 +11,7 @@ import com.parse.ParseObject;
 import android.content.Context;
 import android.graphics.Color;
 import android.location.Location;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,10 @@ public class FoodListingAdapter extends ArrayAdapter<ParseObject> {
 	private static int FINAL_RED = 115;
 	private static int  FINAL_GREEN = 80;
 	private static int FINAL_BLUE = 60;
+//	private static int FINAL_RED = 64;
+//	private static int  FINAL_GREEN = 45;
+//	private static int FINAL_BLUE = 33;
+	
 	private static double MOVEMENT_SPEED = 1.4; // in m/s
 	
 	private Context mContext; 
@@ -54,27 +59,17 @@ public class FoodListingAdapter extends ArrayAdapter<ParseObject> {
 		}
 		
 	}
-	
-	public View getView(int position, View convertView, ViewGroup parent) {
-		if (convertView == null) { 
-			LayoutInflater inflater = LayoutInflater.from(mContext);
-			convertView = inflater.inflate(liberum.cibum.frooder.R.layout.food_card, parent, false);
-		}
-		ParseObject foodItem = this.getItem(position);
-		ParseGeoPoint masterPoint = null;
-		if ((masterPoint = FrooderApplication.getInstance().getParseLocation()) != null)
-			parseUserLocation = masterPoint;
+	public static void fillCard(View card, ParseObject foodListing, ParseGeoPoint userLocationParse) {
+		ImageView foodPhoto = (ImageView)((ViewGroup) card).getChildAt(0);
 		
-		ImageView foodPhoto = (ImageView)((ViewGroup) convertView).getChildAt(0);
+		TextView foodTitle = (TextView) ((ViewGroup) card).getChildAt(1);
+		foodTitle.setText(foodListing.getString("foodType"));
 		
-		TextView foodTitle = (TextView) ((ViewGroup) convertView).getChildAt(1);
-		foodTitle.setText(foodItem.getString("foodType"));
-		
-		TextView foodDistance = (TextView) ((ViewGroup) convertView).getChildAt(2);
-		ParseGeoPoint foodLocation = foodItem.getParseGeoPoint("foodLocation");
+		TextView foodDistance = (TextView) ((ViewGroup) card).getChildAt(2);
+		ParseGeoPoint foodLocation = foodListing.getParseGeoPoint("foodLocation");
 		double foodDist = -1;
-		if (foodLocation != null && parseUserLocation != null) {
-			foodDist = foodLocation.distanceInKilometersTo(parseUserLocation);
+		if (foodLocation != null && userLocationParse != null) {
+			foodDist = foodLocation.distanceInKilometersTo(userLocationParse);
 			if (foodDist >= 1) 
 				foodDistance.setText(String.format("%.1f km", foodDist));
 			else {
@@ -83,11 +78,11 @@ public class FoodListingAdapter extends ArrayAdapter<ParseObject> {
 			} 
 		}
 		
-		TextView foodDescription = (TextView) ((ViewGroup) convertView).getChildAt(3);
-		foodDescription.setText("There's " + foodItem.getInt("relativeQuantity") + " at " + foodItem.getString("whereText") + "!");
+		TextView foodDescription = (TextView) ((ViewGroup) card).getChildAt(3);
+		foodDescription.setText("There's " + foodListing.getInt("relativeQuantity") + " at " + foodListing.getString("whereText") + "!");
 		
-		TextView foodTimePosted = (TextView) ((ViewGroup) convertView).getChildAt(4);
-		Date updateDate = foodItem.getCreatedAt();
+		TextView foodTimePosted = (TextView) ((ViewGroup) card).getChildAt(4);
+		Date updateDate = foodListing.getCreatedAt();
 		if (updateDate == null)
 			updateDate = new Date(0);
 		Long timeSinceUpdate = (System.currentTimeMillis() - updateDate.getTime()) / 1000;
@@ -102,18 +97,53 @@ public class FoodListingAdapter extends ArrayAdapter<ParseObject> {
 		} else {
 			foodTimePosted.setText(timeSinceUpdate/365 + "y");
 		}
-		
-		ProgressBar chanceOfEating = (ProgressBar) ((ViewGroup) convertView).getChildAt(5);
-		chanceOfEating.setProgress((int) (((double) foodItem.getInt("relativeQuantity") / 10.0) * chanceOfEating.getMax()));
+		 
+		ProgressBar chanceOfEating = (ProgressBar) ((ViewGroup) card).getChildAt(5);
+		chanceOfEating.setProgress((int) (((double) foodListing.getInt("relativeQuantity") / 10.0) * chanceOfEating.getMax()));
 
 		//for determining shading of card based on percent chance
 		Long elapsedTime = ((System.currentTimeMillis() - updateDate.getTime()) / 1000);
-		
+		 
+		// percent chance that it's gone
 		double percentChance = 9 * Math.log(((foodDist != -1) ? foodDist / MOVEMENT_SPEED + elapsedTime : elapsedTime));
+		if (percentChance > 140) percentChance = 140;
 		int colorRed = (int) (255 - percentChance * (255 - FINAL_RED) / 100.0);
+		if (colorRed < 0) colorRed = 0; 
 		int colorGreen = (int) (255 - percentChance * (255 - FINAL_GREEN) / 100.0);
+		if (colorGreen < 0) colorGreen = 0;
 		int colorBlue = (int) (255 - percentChance * (255 - FINAL_BLUE) / 100.0);
-		convertView.setBackgroundColor(Color.rgb(colorRed, colorGreen, colorBlue));
+		if (colorBlue < 0) colorBlue = 0;
+		
+		double backLuminance = 0.299 * colorRed + 0.587 * colorGreen + 0.114 * colorBlue;
+		int textColor = Color.rgb(0, 0, 0);
+		if (backLuminance < 70) {
+			Log.v("color", "backLuminance = " + backLuminance + " for " + foodListing.getString("foodType"));
+			int newShade = (int) (backLuminance * 8);
+			if (newShade > 255) newShade = 200;
+			if (newShade < 60) newShade = 200;
+			textColor = Color.rgb(newShade, newShade, newShade);
+			
+		} 
+		foodTitle.setTextColor(textColor);
+		foodDistance.setTextColor(textColor);
+		foodDescription.setTextColor(textColor);
+		foodTimePosted.setTextColor(textColor);
+		
+		card.setBackgroundColor(Color.rgb(colorRed, colorGreen, colorBlue));
+	}
+	
+	public View getView(int position, View convertView, ViewGroup parent) {
+		if (convertView == null) { 
+			LayoutInflater inflater = LayoutInflater.from(mContext);
+			convertView = inflater.inflate(liberum.cibum.frooder.R.layout.food_card, parent, false);
+		}
+		ParseObject foodItem = this.getItem(position);
+		ParseGeoPoint masterPoint = null;
+		if ((masterPoint = FrooderApplication.getInstance().getParseLocation()) != null)
+			parseUserLocation = masterPoint;
+		
+		//fills in view
+		fillCard(convertView, foodItem, parseUserLocation);
 		
 		return convertView;
 	}

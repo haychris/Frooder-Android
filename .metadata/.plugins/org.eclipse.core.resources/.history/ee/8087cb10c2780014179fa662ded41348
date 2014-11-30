@@ -1,0 +1,15 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/foodlisting_detail_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="liberum.cibum.frooder.FoodListingDetailActivity"
+    tools:ignore="MergeRootFrame" > 
+ 
+     <com.google.android.gms.maps.MapView 
+      	android:id="@+id/mapview"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent" /> 
+    
+    </LinearLayout>
+

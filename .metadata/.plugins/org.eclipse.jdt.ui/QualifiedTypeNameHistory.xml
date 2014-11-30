@@ -16,7 +16,6 @@
 <fullyQualifiedTypeName name="android.widget.TextView"/>
 <fullyQualifiedTypeName name="android.widget.ProgressBar"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
-<fullyQualifiedTypeName name="liberum.cibum.frooder.dummy.FoodListingAdapter"/>
 <fullyQualifiedTypeName name="com.parse.ParseQuery"/>
 <fullyQualifiedTypeName name="com.parse.ParseObject"/>
 <fullyQualifiedTypeName name="com.parse.FindCallback"/>
@@ -39,9 +38,11 @@
 <fullyQualifiedTypeName name="com.google.android.gms.maps.model.LatLng"/>
 <fullyQualifiedTypeName name="android.app.Application"/>
 <fullyQualifiedTypeName name="com.google.android.gms.maps.GoogleMap"/>
-<fullyQualifiedTypeName name="android.util.Log"/>
 <fullyQualifiedTypeName name="liberum.cibum.frooder.FrooderApplication"/>
 <fullyQualifiedTypeName name="android.location.Location"/>
 <fullyQualifiedTypeName name="com.parse.ParseGeoPoint"/>
 <fullyQualifiedTypeName name="com.google.android.gms.maps.model.MarkerOptions"/>
+<fullyQualifiedTypeName name="liberum.cibum.frooder.dummy.FoodListingAdapter"/>
+<fullyQualifiedTypeName name="liberum.cibum.frooder.R.id"/>
+<fullyQualifiedTypeName name="android.util.Log"/>
 </qualifiedTypeNameHistroy>
