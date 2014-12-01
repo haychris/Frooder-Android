@@ -1,6 +1,8 @@
 package liberum.cibum.frooder;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -146,6 +148,7 @@ public class FoodListingListFragment extends ListFragment {
                   	      	foodItemMap.put(po.getObjectId(), po);
                     	}
                     }
+                    sortByBestChance();
           	      	mListAdapter.notifyDataSetChanged();
                 } else {
                     Log.d("score", "Error: " + e.getMessage());
@@ -175,11 +178,104 @@ public class FoodListingListFragment extends ListFragment {
         foodItemList.add(test3);
         
         mListAdapter = new FoodListingAdapter(getActivity(), R.layout.food_card, foodItemList);
-        if (currentLocation != null)
+        if (currentLocation != null) 
         	mListAdapter.setUserLocation(currentLocation);
         setListAdapter(mListAdapter);  
+        //sortByDateCreated();
+        //mListAdapter.sort(comparator);
       
         
+    }
+    
+    public void sortByNewestCreated() {
+    	if (foodItemList.isEmpty())
+    		Log.e("list", "list empty");
+    	else Log.e("list", "" + foodItemList.size());
+    	Collections.sort(foodItemList, new Comparator<ParseObject>(){
+    	    public int compare(ParseObject o1, ParseObject o2) 
+    	    {
+    	       Date o1Creation = o1.getCreatedAt();
+    	       Date o2Creation = o2.getCreatedAt();
+    	       if (o1 != null && o1Creation == null)
+    	    	   o1Creation = new Date(0);
+    	       if (o2 != null && o2Creation == null)
+    	    	   o2Creation = new Date(0);
+    	       Log.e("date sort", "" + ((o1Creation != null) ? o1Creation.toString() : "null") + " and " + ((o2Creation != null) ? o2Creation.toString() : "null"));
+    	       return o2Creation.compareTo(o1Creation);
+    	    }
+    	});
+    	mListAdapter.notifyDataSetChanged();
+
+    }
+    public void sortByClosest() {
+    	if (foodItemList.isEmpty())
+    		Log.e("list", "list empty");
+    	else Log.e("list", "" + foodItemList.size());
+    	Collections.sort(foodItemList, new Comparator<ParseObject>(){
+    	    public int compare(ParseObject o1, ParseObject o2) 
+    	    {
+    	    	//ParseGeoPoint userLocationParse = FrooderApplication.getInstance().getParseLocation();
+    	    	Location userLocation = FrooderApplication.getInstance().getLocation();
+    	    	ParseGeoPoint userLocationParse = new ParseGeoPoint(userLocation.getLatitude(), userLocation.getLongitude());
+    	    	ParseGeoPoint foodLocation1 = o1.getParseGeoPoint("foodLocation");
+    	    	ParseGeoPoint foodLocation2 = o2.getParseGeoPoint("foodLocation");
+    			double foodDist1 = -1;
+    			double foodDist2 = -1;
+    			if (userLocationParse == null)
+    				Log.e("location sort", "userLocation null");
+    			if (foodLocation1 != null && userLocationParse != null) {
+    				foodDist1 = foodLocation1.distanceInKilometersTo(userLocationParse);
+    			}
+    			if (foodLocation2 != null && userLocationParse != null) {
+    				foodDist2 = foodLocation2.distanceInKilometersTo(userLocationParse);
+    			}
+    			Log.e("location sort", "" + foodDist1 + " and " + foodDist2);
+    			return ((Double) foodDist1).compareTo((Double) foodDist2);
+    	    }
+    	});
+    	mListAdapter.notifyDataSetChanged();
+
+    }
+    
+    public void sortByBestChance() { 
+    	if (foodItemList.isEmpty())
+    		Log.e("list", "list empty");
+    	else Log.e("list", "" + foodItemList.size());
+    	Collections.sort(foodItemList, new Comparator<ParseObject>(){
+    	    public int compare(ParseObject o1, ParseObject o2) 
+    	    {
+    	    	Location userLocation = FrooderApplication.getInstance().getLocation();
+    	    	ParseGeoPoint userLocationParse = new ParseGeoPoint(userLocation.getLatitude(), userLocation.getLongitude());
+    	    	ParseGeoPoint foodLocation1 = o1.getParseGeoPoint("foodLocation");
+    	    	ParseGeoPoint foodLocation2 = o2.getParseGeoPoint("foodLocation");
+    			double foodDist1 = -1;
+    			double foodDist2 = -1;
+    			if (userLocationParse == null)
+    				Log.e("location sort", "userLocation null");
+    			if (foodLocation1 != null && userLocationParse != null) {
+    				foodDist1 = foodLocation1.distanceInKilometersTo(userLocationParse);
+    			}
+    			if (foodLocation2 != null && userLocationParse != null) {
+    				foodDist2 = foodLocation2.distanceInKilometersTo(userLocationParse);
+    			}
+    			Date createDate1 = o1.getCreatedAt();
+    			Date createDate2 = o2.getCreatedAt();
+    			if (createDate1 == null)
+    				createDate1 = new Date(0);
+    			if (createDate2 == null)
+    				createDate2 = new Date(0);
+    			Long elapsedTime1 = ((System.currentTimeMillis() - createDate1.getTime()) / 1000);
+    			Long elapsedTime2 = ((System.currentTimeMillis() - createDate2.getTime()) / 1000);
+    			
+    			
+    			double percentChance1 = 9 * Math.log(((foodDist1 != -1) ? foodDist1 / FoodListingAdapter.MOVEMENT_SPEED + elapsedTime1 : elapsedTime1));
+    	    	double percentChance2 = 9 * Math.log(((foodDist2 != -1) ? foodDist2 / FoodListingAdapter.MOVEMENT_SPEED + elapsedTime2 : elapsedTime2));
+
+    	    	return ((Double) percentChance1).compareTo((Double) percentChance2);
+    	    }
+    	});
+    	mListAdapter.notifyDataSetChanged();
+
     }
 
     @Override

@@ -103,16 +103,26 @@ public class FrooderApplication extends Application {
 	}
 	public void setLocation(Location bestLocation) {
 		this.bestLocation = bestLocation;
+		setParseLocation(bestLocation);
 		Log.e("application", "set location success");
 	}
 	public ParseGeoPoint getParseLocation() {
 		return parseUserLocation;
-	}
+	} 
 	public void setParseLocation(ParseGeoPoint bestParseLocation) {
 		this.parseUserLocation = bestParseLocation;
 		Log.e("application", "set Parse location success");
 	}
-	
+	public void setParseLocation(Location bestLocation) {
+		setLocation(bestLocation);
+		if (this.parseUserLocation == null) {
+			this.parseUserLocation = new ParseGeoPoint(bestLocation.getLatitude(), 
+												  bestLocation.getLongitude());
+		} else {
+			this.parseUserLocation.setLatitude(bestLocation.getLatitude());
+			this.parseUserLocation.setLongitude(bestLocation.getLongitude());
+		}
+	}
 	 /** Determines whether one Location reading is better than the current Location fix
 	  * @param location  The new Location that you want to evaluate
 	  * @param currentBestLocation  The current Location fix, to which you want to compare the new one

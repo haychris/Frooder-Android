@@ -97,7 +97,7 @@ public class FoodListingDetailFragment extends Fragment {
             	        	Log.e("updating map", "location null, using hardcoded default");
             	        } else {
             	        	userLatLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
-            	        }
+            	        } 
             	
       
         	   		 	LatLng medianLatLng = new LatLng((foodLocation.getLatitude() + userLatLng.latitude) / 2, 

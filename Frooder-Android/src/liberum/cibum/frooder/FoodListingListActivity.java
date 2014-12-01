@@ -1,10 +1,15 @@
 package liberum.cibum.frooder;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+
 import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseAnalytics;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
+import com.parse.ParseObject;
 import com.parse.ParsePush;
 import com.parse.ParseUser;
 import com.parse.PushService;
@@ -16,6 +21,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.app.Activity;
+import android.app.Fragment;
 
 
 
@@ -101,6 +107,8 @@ public class FoodListingListActivity extends Activity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+    	FoodListingListFragment listFrag = ((FoodListingListFragment) getFragmentManager() 
+                .findFragmentById(R.id.foodlisting_list));
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             //Intent intent = new Intent(this, SettingsActivity.class);
@@ -108,6 +116,15 @@ public class FoodListingListActivity extends Activity
         } else if (id == R.id.add_food){
         	Intent intent = new Intent(this, AddFoodActivity.class);
         	startActivity(intent);
+        } else if (id == R.id.menuSortNewest) {
+        	Log.e("menu", "sort by newest");
+        	listFrag.sortByNewestCreated();
+        } else if (id == R.id.menuSortProximity) {
+        	Log.e("menu", "sort by proximity");
+        	listFrag.sortByClosest();
+        } else if (id == R.id.menuSortBestChance) {
+        	Log.e("menu", "sort by best chance");
+        	listFrag.sortByBestChance();
         }
         return super.onOptionsItemSelected(item);
     }

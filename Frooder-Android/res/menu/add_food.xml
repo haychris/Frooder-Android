@@ -2,6 +2,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="liberum.cibum.frooder.AddFoodActivity" >
 
+    <item
+        android:id="@+id/sorting_menu"
+        android:title="Sort"
+	    android:showAsAction="always">
+	    <menu>
+	        <item
+	            android:id="@+id/menuSortNewest"
+	            android:title="Newest" />
+	        <item
+	            android:id="@+id/menuSortProximity"
+	            android:title="Closest" />
+	        <item
+	            android:id="@+id/menuSortBestChance"
+	            android:title="Best Chance" />
+	    </menu>
+	</item>
     
     <item
         android:id="@+id/add_food"

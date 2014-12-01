@@ -416,8 +416,8 @@ containing a value of this type.
         public static final int powered_by_google_light=0x7f020027;
     }
     public static final class id {
-        public static final int action_settings=0x7f0a0032;
-        public static final int add_food=0x7f0a0031;
+        public static final int action_settings=0x7f0a0036;
+        public static final int add_food=0x7f0a0035;
         public static final int book_now=0x7f0a000e;
         public static final int buyButton=0x7f0a000a;
         public static final int buy_now=0x7f0a000f;
@@ -446,6 +446,9 @@ containing a value of this type.
         public static final int mapview=0x7f0a0026;
         public static final int mapview_add=0x7f0a001c;
         public static final int match_parent=0x7f0a000c;
+        public static final int menuSortBestChance=0x7f0a0034;
+        public static final int menuSortNewest=0x7f0a0032;
+        public static final int menuSortProximity=0x7f0a0033;
         public static final int monochrome=0x7f0a0013;
         public static final int none=0x7f0a0001;
         public static final int normal=0x7f0a0002;
@@ -460,6 +463,7 @@ containing a value of this type.
         public static final int set_switch=0x7f0a002b;
         public static final int set_timer_condition=0x7f0a002c;
         public static final int set_title=0x7f0a0029;
+        public static final int sorting_menu=0x7f0a0031;
         public static final int strict_sandbox=0x7f0a0009;
         public static final int terrain=0x7f0a0004;
         public static final int textView1=0x7f0a0015;

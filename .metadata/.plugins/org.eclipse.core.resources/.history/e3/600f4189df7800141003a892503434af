@@ -1,0 +1,25 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="liberum.cibum.frooder.AddFoodActivity" >
+
+    <item
+	    android:showAsAction="always">
+	    <menu>
+	        <item
+	            android:id="@+id/menuSortNewest"
+	            android:title="Sort by newest" />
+	        <item
+	            android:id="@+id/menuSortProximity"
+	            android:title="Sort by proximity" />
+	    </menu>
+	</item>
+    
+    <item
+        android:id="@+id/add_food"
+        android:orderInCategory="1"
+        android:showAsAction="always"
+        android:icon="@drawable/ic_action_add_food"
+        android:title="@string/add_food"/>
+  
+
+</menu>

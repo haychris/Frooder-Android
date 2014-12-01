@@ -99,8 +99,8 @@ int drawable ic_plusone_tall_off_client 0x7f020024
 int drawable pep_pizza 0x7f020025
 int drawable powered_by_google_dark 0x7f020026
 int drawable powered_by_google_light 0x7f020027
-int id action_settings 0x7f0a0032
-int id add_food 0x7f0a0031
+int id action_settings 0x7f0a0036
+int id add_food 0x7f0a0035
 int id book_now 0x7f0a000e
 int id buyButton 0x7f0a000a
 int id buy_now 0x7f0a000f
@@ -129,6 +129,9 @@ int id map_layout 0x7f0a001a
 int id mapview 0x7f0a0026
 int id mapview_add 0x7f0a001c
 int id match_parent 0x7f0a000c
+int id menuSortBestChance 0x7f0a0034
+int id menuSortNewest 0x7f0a0032
+int id menuSortProximity 0x7f0a0033
 int id monochrome 0x7f0a0013
 int id none 0x7f0a0001
 int id normal 0x7f0a0002
@@ -143,6 +146,7 @@ int id set_main 0x7f0a0028
 int id set_switch 0x7f0a002b
 int id set_timer_condition 0x7f0a002c
 int id set_title 0x7f0a0029
+int id sorting_menu 0x7f0a0031
 int id strict_sandbox 0x7f0a0009
 int id terrain 0x7f0a0004
 int id textView1 0x7f0a0015
