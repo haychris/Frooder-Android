@@ -105,7 +105,7 @@ public class FoodListingAdapter extends ArrayAdapter<ParseObject> {
 		Long elapsedTime = ((System.currentTimeMillis() - updateDate.getTime()) / 1000);
 		 
 		// percent chance that it's gone
-		double percentChance = 9 * Math.log(((foodDist != -1) ? foodDist * 1000 / MOVEMENT_SPEED + elapsedTime : elapsedTime));
+		double percentChance = 9 * Math.log(((foodDist != -1) ? foodDist / MOVEMENT_SPEED + elapsedTime : elapsedTime));
 		if (percentChance > 140) percentChance = 140;
 		int colorRed = (int) (255 - percentChance * (255 - FINAL_RED) / 100.0);
 		if (colorRed < 0) colorRed = 0; 

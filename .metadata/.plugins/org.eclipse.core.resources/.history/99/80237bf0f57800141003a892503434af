@@ -268,8 +268,8 @@ public class FoodListingListFragment extends ListFragment {
     			Long elapsedTime2 = ((System.currentTimeMillis() - createDate2.getTime()) / 1000);
     			
     			
-    			double percentChance1 = 9 * Math.log(((foodDist1 != -1) ? foodDist1 * 1000 / FoodListingAdapter.MOVEMENT_SPEED + elapsedTime1 : elapsedTime1));
-    	    	double percentChance2 = 9 * Math.log(((foodDist2 != -1) ? foodDist2 * 1000 / FoodListingAdapter.MOVEMENT_SPEED + elapsedTime2 : elapsedTime2));
+    			double percentChance1 = 9 * Math.log(((foodDist1 != -1) ? foodDist1 / FoodListingAdapter.MOVEMENT_SPEED + elapsedTime1 : elapsedTime1));
+    	    	double percentChance2 = 9 * Math.log(((foodDist2 != -1) ? foodDist2 / FoodListingAdapter.MOVEMENT_SPEED + elapsedTime2 : elapsedTime2));
 
     	    	return ((Double) percentChance1).compareTo((Double) percentChance2);
     	    }
